@@ -1,48 +1,55 @@
 var claimData = [];
 
 function getAllClaims() {
-    $.get('http://localhost:8080/fetch/claims', function(data) {
-        var str = `<table style="width:400px">
-        <tr>
-          <th>ID</th>
-          <th>Name</th> 
-          <th>Status</th>
-          <th></th>
-        </tr>`;
+    let start = performance.now();
+    $.get('http://localhost:9191/fetch/claims', function(data) {
+        var str = '<select id="id" class="form-select form-select-lg mb-3">';
         data.forEach(element => {
-            str += "<tr class='each-row'><td>" + element.claimId + "</td><td>" + element.name + "</td><td>" + element.status + "</td><td><button onclick='edit(" + element.claimId + ")' value='Edit status'>Edit status</button></td></tr>";
+            str += "<option value='" + element.id + "'>" + element.fsd0005 + "</option>";
         });
-        str += "</table>";
-        $("#cont").empty().append(str);
+        str += "</select>";
+        $("#claim_cont").empty().append(str);
+        let end = performance.now();
+
+        console.log("Fetched All Claims in:", (end-start));
     });
 }
 
-function save() {
-    $.post("http://localhost:8080/save/claim", {
-        name: $("#name").val(),
+function changeStatus() {
+    let start = performance.now();
+    $.post("http://localhost:9191/update/claim", {
+        id: $("#id").val(),
         status: $("#status").val()
     }, function (str) {
-        $("#msg").empty().append(str);
-        getAllClaims();
+        let end = performance.now();
+        console.log("Updated Claim in:", (end-start));
     });
 }
 
+// function save() {
+//     $.post("http://localhost:8080/save/claim", {
+//         name: $("#name").val(),
+//         status: $("#status").val()
+//     }, function (str) {
+//         $("#msg").empty().append(str);
+//         getAllClaims();
+//     });
+// }
 
-function edit(id) {
-    $.post("http://localhost:8080/update/claim", {
-        ID: id,
-        name: $("#name").val(),
-        status: $("#status").val()
-    }, function (str) {
-        $("#msg").empty().append(str);
-        getAllClaims();
-    });
-}
+
+// function edit(id) {
+//     $.post("http://localhost:8080/update/claim", {
+//         ID: id,
+//         name: $("#name").val(),
+//         status: $("#status").val()
+//     }, function (str) {
+//         $("#msg").empty().append(str);
+//         getAllClaims();
+//     });
+// }
 
 $('document').ready(function(event) {
     getAllClaims();
-
-    $("#create").on("click", save);
 });
 
 
